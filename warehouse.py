@@ -1,13 +1,18 @@
 import paramiko
 import time
+import yaml
 
 
-switch_ip = "192.168.*.*"
-username = "****"
-password = "*****"
-enable_password = "******"
-tftp_server = "192.168.*.*"
-backup_file = "startup-config-warehouse.txt"
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+
+switch_ip = config["switch"]["ip"]
+username = config["switch"]["username"]
+password = config["switch"]["password"]
+enable_password = config["switch"]["enable_password"]
+
+tftp_server = config["tftp"]["server"]
+backup_file = config["tftp"]["backup_file"]
 
 
 ssh_client = paramiko.SSHClient()
@@ -17,8 +22,7 @@ ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 try:
 
     print(f"Conneting to {switch_ip}...")
-    ssh_client.connect(hostname=switch_ip,
-                       username=username, password=password)
+    ssh_client.connect(hostname=switch_ip, username=username, password=password)
 
     remote_conn = ssh_client.invoke_shell()
     time.sleep(5)
@@ -33,10 +37,10 @@ try:
     output = remote_conn.recv(65535).decode("utf-8")
     if "#" not in output:
         raise Exception(
-            "Failed to enter privileged EXEC mode.Check your enable password")
+            "Failed to enter privileged EXEC mode.Check your enable password"
+        )
 
-    remote_conn.send(
-        f"copy startup-config tftp://{tftp_server}/{backup_file}\n")
+    remote_conn.send(f"copy startup-config tftp://{tftp_server}/{backup_file}\n")
     time.sleep(5)
 
     remote_conn.send("\n")

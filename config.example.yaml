@@ -1,0 +1,11 @@
+
+switch:
+ ip:"YOUR_SWITC_IP"
+ username: "YOUR_USERNAME"
+ password: "YOUR_PASSWORD"
+
+ enable_password: "YOUR_ENABLE_PASSWORD"
+
+tftp:
+  server: "YOUR_TFTP_IP"
+  backup_fil: "startup-config-warehouse.txt"
